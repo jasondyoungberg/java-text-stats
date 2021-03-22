@@ -69,9 +69,9 @@ public class TextStatistics implements TextStatisticsInterface {
 	public int getCharCount() {return chars;}
 	public int getWordCount() {return words;}
 	public int getLineCount() {return lines;}
-	public int getLetterCount() {return chars;}
-	public int getWordLengthCount() {return chars;}
-	public int getAverageWordLength() {return chars;}
+	public int[] getLetterCount() {return letterFrequency;}
+	public int[] getWordLengthCount() {return wordLengthFrequency;}
+	public double getAverageWordLength() {return avgWordLength;}
 
 	public String toString(){
 		if (error) return "Invalid file path: " + path;
