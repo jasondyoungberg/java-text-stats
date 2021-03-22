@@ -5,7 +5,7 @@ import java.io.FileNotFoundException;
 public class TextStatistics implements TextStatisticsInterface {
 	private static final String DELIMITERS = "[\\W\\d_]+";
 
-	private String text;
+	private String path;
 	private int chars;
 	private int words;
 	private int lines;
@@ -17,8 +17,11 @@ public class TextStatistics implements TextStatisticsInterface {
 	private int wordLengthFrequency[];
 	private int letterFrequency[];
 
+	private boolean error;
+
 
 	public TextStatistics (File file) {
+		path = file.getPath();
 		try {
 			Scanner reader = new Scanner(file);
 
@@ -57,8 +60,9 @@ public class TextStatistics implements TextStatisticsInterface {
 			avgWordLength = (double) totalWordLength / words;
 
 			reader.close();
+			error = false;
 		} catch (FileNotFoundException e) {
-			System.out.println("ERROR: File does not exist");
+			error = true;
 		}
 	}
 
@@ -70,20 +74,52 @@ public class TextStatistics implements TextStatisticsInterface {
 	public int getAverageWordLength() {return chars;}
 
 	public String toString(){
+		if (error) return "Invalid file path: " + path;
+
 		String wordLengthFrequencyStr = "";
 		String letterFrequencyStr = "";
 
-		for (int x : wordLengthFrequency) wordLengthFrequencyStr += x + " ";
+		String temp;
 
-		for (int x : letterFrequency) letterFrequencyStr += x + " ";
+		//for (int x : wordLengthFrequency) wordLengthFrequencyStr += x + " ";
+		//for (int x : letterFrequency) letterFrequencyStr += x + " ";
 
-		return  "chars:                  "+chars+
-				"\nwords:                  "+words+
-				"\nlines:                  "+lines+
-				"\nminWordLength:          "+minWordLength+
-				"\nmaxWordLength:          "+maxWordLength+
-				"\navgWordLength:          "+avgWordLength+
-				"\nwordLengthFrequencyStr: "+wordLengthFrequencyStr+
-				"\nletterFrequencyStr:     "+letterFrequencyStr;
+		for (int i = 0; i < 13; i++) {
+			temp = " " + (char)('a' + i) + " = " + letterFrequency[i];
+			while (temp.length() < 16) temp += " ";
+
+			letterFrequencyStr += temp;
+
+			temp = " " + (char)('n' + i) + " = " + letterFrequency[i + 13];
+			while (temp.length() < 16) temp += " ";
+			letterFrequencyStr += temp + "\n";
+		}
+
+		for (int i = minWordLength; i <= maxWordLength; i++) {
+			temp = i + "";
+			while (temp.length() < 7) temp = " " + temp;
+
+			wordLengthFrequencyStr += temp;
+
+			temp = wordLengthFrequency[i] + "";
+			while (temp.length() < 11) temp = " " + temp;
+
+			wordLengthFrequencyStr += temp + "\n";
+		}
+
+		return "Statistics for " + path + "\n" +
+			"==========================================================\n" +
+			lines + " lines\n" +
+			words + " words\n" +
+			chars + " characters\n" +
+			"------------------------------\n" +
+			letterFrequencyStr +
+			"------------------------------\n" +
+			" length  frequency\n" +
+			" ------  ---------\n" +
+			wordLengthFrequencyStr +
+			"\n" +
+			"Average word length = " + String.format("%.2f", avgWordLength) + "\n" +
+			"==========================================================\n";
 	}
 }
